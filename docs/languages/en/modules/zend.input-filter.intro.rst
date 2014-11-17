@@ -236,6 +236,7 @@ validity of the properties.
     */
     class EmailInputFilter extends InputFilter
     {
+        /** @var InputFactory */
         protected $inputFactory;
 
         public function __construct()
@@ -244,11 +245,17 @@ validity of the properties.
             $this->setValidators();
         }
 
+        /**
+         * Loads the validators
+         */
         protected function setValidators()
         {
             $this->setEmailValidator();
         }
 
+        /**
+         * Creates a validator to check the name property
+         */
         protected function setEmailValidator()
         {
             $this->add(
@@ -275,35 +282,53 @@ validity of the properties.
         }
     }
 
-    class simplePerson implements InputFilterInterface
+    class SimplePerson implements InputFilterInterface
     {
+        /** @var string */
         protected $name;
 
+        /** @var string */
         protected $email;
 
+        /** @var InputFilter */
         protected $inputFilter;
 
+        /**
+         * @return string
+         */
         public function getName()
         {
             return $this->name;
         }
 
+        /**
+         * @param string $name
+         */
         public function setName($name)
         {
             $this->name = $name;
         }
 
+        /**
+         * @return string
+         */
         public function getEmail()
         {
             return $this->email;
         }
 
+        /**
+         * @param string $email
+         */
         public function setEmail($email)
         {
             $this->email = $email;
         }
 
-        // Set up our input filters
+        /**
+         * @return InputFilter
+         * Sets up our InputFilters
+         */
         public function getInputFilter()
         {
             if (!$this->inputFilter) {
