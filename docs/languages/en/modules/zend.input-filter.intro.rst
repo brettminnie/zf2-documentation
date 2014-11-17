@@ -187,6 +187,7 @@ validity of the properties.
     */
     class NameInputFilter extends InputFilter
     {
+        /** @var InputFactory */
         protected $inputFactory;
 
         public function __construct()
@@ -195,11 +196,17 @@ validity of the properties.
             $this->setValidators();
         }
 
+        /**
+         * Loads the validators
+         */
         protected function setValidators()
         {
             $this->setNameValidator();
         }
 
+        /**
+         * Creates a validator to check the name property
+         */
         protected function setNameValidator()
         {
             $this->add(
@@ -214,7 +221,8 @@ validity of the properties.
                             array(
                                 'name' => 'string_length',
                                 'options' => array(
-                                'min' => 8
+                                    'min' => 8
+                                )
                             ),
                         )
                     )
