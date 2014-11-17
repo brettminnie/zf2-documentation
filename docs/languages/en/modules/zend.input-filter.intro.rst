@@ -182,6 +182,9 @@ validity of the properties.
     use Zend\InputFilter\Factory as InputFactory;
     use Zend\InputFilter\InputFilter;
 
+   /**
+    * Filter to ensure a name property is set and > 8 characters
+    */
     class NameInputFilter extends InputFilter
     {
         protected $inputFactory;
@@ -220,6 +223,9 @@ validity of the properties.
         }
     }
 
+    /**
+    * Filter to ensure an email property is set and > 8 characters and is valid
+    */
     class EmailInputFilter extends InputFilter
     {
         protected $inputFactory;
@@ -289,11 +295,15 @@ validity of the properties.
             $this->email = $email;
         }
 
+        // Set up our input filters
         public function getInputFilter()
         {
             if (!$this->inputFilter) {
+                // Create a new input filter
                 $this->inputFilter = new InputFilter();
+                // Merge our inputFilter in for the email property
                 $this->inputFilter->merge(new EmailInputFilter());
+                // Merge our inputFilter in for the name property
                 $this->inputFilter->merge(new NameInputFilter());
             }
             return $this->inputFilter;
