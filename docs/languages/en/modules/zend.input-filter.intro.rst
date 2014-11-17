@@ -168,8 +168,8 @@ appropriate object. You may create either ``Input`` or ``InputFilter`` objects i
    ));
 
 The ``merge()`` method may be used on an InputFilterInterface in order to add two or more filters to each other, effectively
-allowing you to create chains of filters. This is especially useful in object hierarchies whereby we may a simple set of
-validation rules on the base object and build these up to more specific rules along the way.
+allowing you to create chains of filters. This is especially useful in object hierarchies whereby we may define a generic
+set of validation rules on the base object and build these up to more specific rules along the way.
 
 In the example below an InputFilter is built up for the name property as well as for the email property allowing them to
 be re-used elsewhere. When the ``isValid()`` method is called on the object, all of the merged filters are run against
