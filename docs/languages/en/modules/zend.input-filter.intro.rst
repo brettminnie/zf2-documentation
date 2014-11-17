@@ -167,6 +167,138 @@ appropriate object. You may create either ``Input`` or ``InputFilter`` objects i
        ),
    ));
 
+The ``merge`` method may be used on an InputFilter in order to add two or more filters to each other effectively
+allowing you to create chains of chains. This is especially useful in object hierarchies whereby we may a simple set of
+validation rules on the base object and build these up to more specific rules along the way.
+
+In the example below an InputFilter is built up for the name property as well as for the email property allowing them to
+be re-used elsewhere. When the isValid method is called on the object, all of the merged filters are run to test the
+validity of the properties.
+
+.. code-block:: php
+   :linenos:
+
+    use Zend\InputFilter\InputFilterInterface;
+    use Zend\InputFilter\Factory as InputFactory;
+    use Zend\InputFilter\InputFilter;
+
+    class NameInputFilter extends InputFilter
+    {
+        protected $inputFactory;
+
+        public function __construct()
+        {
+            $this->inputFactory = new InputFactory();
+            $this->setValidators();
+        }
+
+        protected function setValidators()
+        {
+            $this->setNameValidator();
+        }
+
+        protected function setNameValidator()
+        {
+            $this->add(
+                $this->inputFactory->createInput(
+                    array(
+                        'name'       => 'name',
+                        'required'   => true,
+                        'validators' => array(
+                            array(
+                                'name' => 'not_empty',
+                            ),
+                            array(
+                                'name' => 'string_length',
+                                'options' => array(
+                                'min' => 8
+                            ),
+                        )
+                    )
+                )
+            );
+        }
+    }
+
+    class EmailInputFilter extends InputFilter
+    {
+        protected $inputFactory;
+
+        public function __construct()
+        {
+            $this->inputFactory = new InputFactory();
+            $this->setValidators();
+        }
+
+        protected function setValidators()
+        {
+            $this->setEmailValidator();
+        }
+
+        protected function setEmailValidator()
+        {
+            $this->add(
+                $this->inputFactory->createInput(
+                    array(
+                        'name'       => 'email',
+                        'required'   => true,
+                        'validators' => array(
+                            array(
+                                'name' => 'not_empty',
+                            ),
+                            array(
+                                'name'    => 'string_length',
+                                'options' => array(
+                                'min'     => 8
+                            ),
+                            array(
+                                'name'    => 'email_address',
+                            )
+                        )
+                    )
+                )
+            );
+        }
+    }
+
+    class simplePerson implements InputFilterInterface
+    {
+        protected $name;
+
+        protected $email;
+
+        protected $inputFilter;
+
+        public function getName()
+        {
+            return $this->name;
+        }
+
+        public function setName($name)
+        {
+            $this->name = $name;
+        }
+
+        public function getEmail()
+        {
+            return $this->email;
+        }
+
+        public function setEmail($email)
+        {
+            $this->email = $email;
+        }
+
+        public function getInputFilter()
+        {
+            if (!$this->inputFilter) {
+                $this->inputFilter = new InputFilter();
+                $this->inputFilter->merge(new EmailInputFilter());
+                $this->inputFilter->merge(new NameInputFilter());
+            }
+            return $this->inputFilter;
+        }
+    }
 
 Also see
 
