@@ -168,12 +168,12 @@ appropriate object. You may create either ``Input`` or ``InputFilter`` objects i
    ));
 
 The ``merge()`` method may be used on an InputFilter in order to add two or more filters to each other effectively
-allowing you to create chains of chains. This is especially useful in object hierarchies whereby we may a simple set of
+allowing you to create chains of filters. This is especially useful in object hierarchies whereby we may a simple set of
 validation rules on the base object and build these up to more specific rules along the way.
 
 In the example below an InputFilter is built up for the name property as well as for the email property allowing them to
-be re-used elsewhere. When the isValid method is called on the object, all of the merged filters are run to test the
-validity of the properties.
+be re-used elsewhere. When the ``isValid()`` method is called on the object, all of the merged filters are run against
+the calling object in order to validate the internal properties based on our compound set of filters.
 
 .. code-block:: php
    :linenos:
@@ -181,6 +181,8 @@ validity of the properties.
     use Zend\InputFilter\InputFilterInterface;
     use Zend\InputFilter\Factory as InputFactory;
     use Zend\InputFilter\InputFilter;
+    use Zend\InputFilter\InputFilterAwareInterface;
+    use Zend\InputFilter\InputFilterInterface;
 
    /**
     * Filter to ensure a name property is set and > 8 characters
@@ -232,8 +234,8 @@ validity of the properties.
     }
 
     /**
-    * Filter to ensure an email property is set and > 8 characters and is valid
-    */
+     * Filter to ensure an email property is set and > 8 characters and is valid
+     */
     class EmailInputFilter extends InputFilter
     {
         /** @var InputFactory */
@@ -282,7 +284,7 @@ validity of the properties.
         }
     }
 
-    class SimplePerson implements InputFilterInterface
+    class SimplePerson implements InputFilterAwareInterface
     {
         /** @var string */
         protected $name;
@@ -325,10 +327,11 @@ validity of the properties.
             $this->email = $email;
         }
 
-        /**
-         * @return InputFilter
-         * Sets up our InputFilters
-         */
+         /**
+          * Retrieve input filter
+          *
+          * @return InputFilterInterface
+          */
         public function getInputFilter()
         {
             if (!$this->inputFilter) {
@@ -340,6 +343,19 @@ validity of the properties.
                 $this->inputFilter->merge(new NameInputFilter());
             }
             return $this->inputFilter;
+        }
+
+        /**
+         * Set input filter
+         *
+         * @param  InputFilterInterface $inputFilter
+         * @return InputFilterAwareInterface
+         */
+        public function setInputFilter(InputFilterInterface $inputFilter)
+        {
+            $this->inputFilter = $inputFilter;
+
+            return $this;
         }
     }
 
